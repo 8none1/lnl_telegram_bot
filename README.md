@@ -8,6 +8,8 @@ So we created this Telegram bot to allow us collect interesting links and put th
 
 I didn't want to have to maintain any infrastructure for this bot, so Google Apps Script seemed like a reasonable choice since we already use Google Docs and Google Drive to manage the rest of our shared files.
 
+The script is available in this Github repo.  The file is called `appsscript.gs`.
+
 ## Technologies involved
 
 1. Telegram Bot
