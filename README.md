@@ -45,7 +45,7 @@ We will scope the script so that it can only talk to the spreadsheet in which it
 
 Google Apps script is more or less Javascript.  You can write a script and then deploy it as a web app.  This will give you a unique URL which should be kept secret ideally.  You need to tell your Telegram bot about that URL and it will `POST` a JSON object to that URL each time it receives a command (not all messages in the group will be sent to the bot, so it won't snoop on your normal conversations).
 
-I found it extremely frustraiting to test and debug this Apps Script.  In order to test in the real work you have to deploy it each time which takes a few seconds and a lot of clicking, plus the logging doesn't seem work at all, so you're left with few options to see what's going on.  The best way to debug is to stub out the bits which would be POSTed to you from Telegram and then use the `Run` option at the top of the editor to execute the main `doPOST` function.  That way you do get logs and you don't have to wait to deploy each time.  More on this later.
+I found it extremely frustrating to test and debug this Apps Script.  In order to test you have to deploy it each time which takes a few seconds and a lot of clicking, plus the logging doesn't seem work at all, so you're left with few options to see what's going on.  The best way to debug is to stub out the bits which would be POSTed to you from Telegram and then use the `Run` option at the top of the editor to execute the main `doPOST` function.  That way you do get logs and you don't have to wait to deploy each time.  More on this later.
 
 ## The Script itself
 
@@ -78,7 +78,7 @@ To get this URL you have to (more on this below):
 1. In the Apps Script editor choose the `setWebhook` function and click run
 ![image](https://user-images.githubusercontent.com/6552931/233774333-d1fe6da3-baeb-497e-976c-40ea05b8273b.png)
 
-This will simply tell Telegram where to POST it's messages.  You do not need to deploy the script again when you change the `deployment id`, just run the function, but if you do have to redeploy the script the ID will change and you will have to update the script with that id and rerun the `setWebhook` function.
+This will simply tell Telegram where to POST messages.  You do not need to deploy the script again when you change the `deployment id`, just run the function, but if you do have to redeploy the script the ID will change and you will have to update the script with that id and rerun the `setWebhook` function.
 
 ### Sending Telegram messages
 
@@ -146,4 +146,4 @@ and after a few seconds the URL should appear in the spreadsheet and you will re
 
 ## Conclusion
 
-Despite it's clunkiness when writing a web app Google Apps Script is powerful enough to be able to develop some useful functionality and the Telegram bot API is simple enough to make that easy.  I'll be interested to hear about bots you create in this way.  [https://latenightlinux.com/contact/]
+Despite its clunkiness when writing a web app Google Apps Script is powerful enough to be able to develop some useful functionality and the Telegram bot API is simple enough to make that easy.  I'll be interested to hear about bots you create in this way.  [Get in touch](https://latenightlinux.com/contact/)
