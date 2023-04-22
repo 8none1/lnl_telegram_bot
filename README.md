@@ -1,4 +1,5 @@
-# lnl_telegram_bot
+# Late Night Linux Telegram News Bot
+
 On the [Late Night Linux](https://latenightlinux.com/) podcast we talk about goings on in the Linux and Open Source ecosystem.  To keep ourselves in sync we have a Telegram group where we share links to interesting articles.
 
 Telegram does allow you to see an overview of all links sent to that channel but it's impossible to tell the difference between something we were just commenting on and an article which we think should go in the show.
@@ -25,6 +26,7 @@ The Botfather will give you an API key.  Keep this to hand.
 The bot will interact with the Google Docs spreadsheet via a webhook.  That is to say whenever you talk to the bot via a `/` command the bot will receive the text of the message and `POST` it to a webhook URL.  Google Apps Script will host that URL.  We will tell The Botfather about that webhook URL later on.  In the meantime create a group chat and invite the bot.  We need the chat id for that group so we can test.
 
 To get a chat ID I suggest that you:
+
 - Open the Telegram web app in your browser
 - Start a new *group* give it a name and add the bot you created earlier (note, there will probably be 100 "googledocstestbot" bots, make sure you select yours.
 - Note in the URL bar a negative number at the end of the address, this is the chat ID for your 1:1 conversation with the bot.  Copy this in to the script in the `doPost` function.  NB: include the minus.
@@ -46,12 +48,13 @@ I found it extremely frustraiting to test and debug this Apps Script.  In order 
 ## The Script itself
 
 We need to declare few things:
+
 - The Telegram bot's authentication token (the Botfather will give you this)
 - The id of the deployed Apps Script web app.  More on this below.
-- A link to the spreadsheet for convinience purposes (not strictly required)
+- A link to the spreadsheet for convenience purposes (not strictly required)
 - A list of Telegram user ids of people who should be allowed to talk to the bot
 
-### Wrtiting a row to the spreadsheet
+### Writing a row to the spreadsheet
 
 The script will be scoped to a single spreadsheet, this makes writing a row a little easier.  All you need to do is:
 
@@ -64,8 +67,10 @@ The script will be scoped to a single spreadsheet, this makes writing a row a li
 this will add a row at the bottom of the first sheet inside the spreadsheet where this script is running.  Each element of the array is a cell in the spreadsheet.
 
 ### Telling Telegram where this script lives
-Telegram needs to be updated with the live URL of this script.  That URL changes each time you deploy.  There is a convinence function to help you manage this called `setWebhook`.
+
+Telegram needs to be updated with the live URL of this script.  That URL changes each time you deploy.  There is a convenience function to help you manage this called `setWebhook`.
 To get this URL you have to (more on this below):
+
 1. Deploy the script
 1. Copy the `deployment id` and update the variable at the top of the script
 1. In the Apps Script editor choose the `setWebhook` function and click run
@@ -74,14 +79,17 @@ To get this URL you have to (more on this below):
 This will simply tell Telegram where to POST it's messages.  You do not need to deploy the script again when you change the `deployment id`, just run the function, but if you do have to redeploy the script the ID will change and you will have to update the script with that id and rerun the `setWebhook` function.
 
 ### Sending Telegram messages
+
 We use the JSON object method on the sendMessage Telegram API to send messages.  The `sendMessage` function builds a suitable payload and `POST`s it.
 
 ### The main function `doPost`
-The `doPost` function is called when Telegram `POST`s a JSON object containing information about the message it received to the webhook URL.  We unpack that object, pick out the relevant information, do some basic santiy checking, add the URL to the spreadsheet and send back a confirmation message.
+
+The `doPost` function is called when Telegram `POST`s a JSON object containing information about the message it received to the webhook URL.  We unpack that object, pick out the relevant information, do some basic sanity checking, add the URL to the spreadsheet and send back a confirmation message.
 
 This is where you need to set some static values if you want to test and debug in the Apps Script editor.  Rather than actually `POST`ing an object we use a local variable instead.
 
 ### Testing the function
+
 As mentioned above, testing Apps Scripts of this type is painful.  The best way I found to do it was to replace the data that Telegram would normally POST with hardcoded variables.  This allows you to run a single function from the UI and get logging output and errors.  I've left comments in the code where you can do this.  You will need to change some bits to suit you.  Keep reading for more information on this.
 
 When you run the script for the first time you will be asked to verify a few things.  The process looks like this:
@@ -101,7 +109,6 @@ Deal with this massive warning by clicking "Advanced", and then "Go to <your scr
 Note that the script can only interact with the single spreadsheet you created, plus "connect to an external service" (i.e. POST back to Telegram to send messages):
 ![image](https://user-images.githubusercontent.com/6552931/233778933-11eb6056-77ae-47ab-8ea8-6fd580e62773.png)
 
-
 If everything works you should see a message from the bot in the Telegram group you created and a new line in the spreadsheet.  You are now ready to deploy this script, get a webhook URL and hook it up to the bot.  If not, you should at least have some useful logging messages and errors.
 
 ## Deploying the script
@@ -111,7 +118,7 @@ You now need to comment out all the testing variables and uncomment out the code
 
 At the top right you have a "Deploy" button.  Click that and choose "New Deployment".
 
-Then you have to deal with this rather opaque dialog:
+Then you have to deal with this rather opaque dialogue:
 ![image](https://user-images.githubusercontent.com/6552931/233779648-5c5e3844-5d54-4e7d-bd65-f57bb6063313.png)
 
 Click the cog next to "Select Type" (yes, it does look like a column header and not a button) and choose "Web App":
@@ -124,7 +131,6 @@ Click "Deploy", and you will get back some info.  Copy the "Deployment ID" to th
 
 ![image](https://user-images.githubusercontent.com/6552931/233779787-e7acb878-e18e-4960-9168-52ddbec4ebda.png)
 
-
 Take that id and at the top of the script set `webAppId` to be that value.
 Save the script (ctrl-s).
 At the top from the function dropdown choose `setWebhook` and click run
@@ -132,13 +138,10 @@ At the top from the function dropdown choose `setWebhook` and click run
 
 That will tell Telegram where to `POST` it's messages.
 
+Once the script is deployed back in the group chat you posted earlier you should now be able to instruct the bot directly by typing:
+`/news <url>`
+and after a few seconds the URL should appear in the spreadsheet and you will receive a confirmation message back from the bot.
 
+## Conclusion
 
-
-
-
-
-
-
-
-
+Despite it's clunkiness when writing a web app Google Apps Script is powerful enough to be able to develop some useful functionality and the Telegram bot API is simple enough to make that easy.  I'll be interested to hear about bots you create in this way.  [https://latenightlinux.com/contact/]
